@@ -1,0 +1,53 @@
+# front 담당 작성(승환) - 저장용
+
+
+
+# dandelion602
+
+**node_modules가 없을시 dandelion2 디렉터리의 Terminal에서
+
+**npm install 을 입력해주세요
+
+**Vue실행시 구동시 필수 설치
+
+Nodejs(버전 10 이상)
+
+Vue(npm install vue
+
+Vue/cli(npm install -g @vue/cli)
+
+quasar/cli(npm install -g @quasar/cli)
+
+
+**quasar cli 실행 커맨드 
+
+: quasar dev
+
+
+
+# Quasar App (dandelion_demo)
+
+A Quasar Framework app
+
+## Install the dependencies
+```bash
+npm install
+```
+
+### Start the app in development mode (hot-code reloading, error reporting, etc.)
+```bash
+quasar dev
+```
+
+### Lint the files
+```bash
+npm run lint
+```
+
+### Build the app for production
+```bash
+quasar build
+```
+
+### Customize the configuration
+See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).

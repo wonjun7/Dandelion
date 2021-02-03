@@ -1,0 +1,178 @@
+-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- member Table Create SQL
+CREATE TABLE member
+(
+    `number`    INT             NOT NULL    AUTO_INCREMENT COMMENT '회원번호',
+    `id`        VARCHAR(50)     NOT NULL    COMMENT '아이디ID',
+    `password`  VARCHAR(100)    NOT NULL    COMMENT '비밀번호',
+    `name`      VARCHAR(50)     NOT NULL    COMMENT '이름',
+    `phone`     VARCHAR(50)     NOT NULL    COMMENT '연락처',
+    `address`   VARCHAR(150)    NOT NULL    COMMENT '주소',
+    `is_bird`   INT             NOT NULL    DEFAULT 0 COMMENT 'Bird 여부',
+    `point`     INT             NOT NULL    DEFAULT 0 COMMENT '잔여 포인트',
+    PRIMARY KEY (number)
+);
+
+ALTER TABLE member COMMENT '회원';
+
+
+-- member Table Create SQL
+CREATE TABLE board
+(
+    `number`         INT              NOT NULL    AUTO_INCREMENT COMMENT '게시글 번호',
+    `title`          VARCHAR(255)     NOT NULL    COMMENT '게시글 제목',
+    `member_number`  INT              NOT NULL    COMMENT '게시글 작성자 회원번호',
+    `view`           INT              NULL        DEFAULT 0 COMMENT '조회수',
+    `date`           TIMESTAMP        NOT NULL    COMMENT '작성일',
+    `modify_date`    TIMESTAMP        NULL        COMMENT '마지막 수정일',
+    `contents`       VARCHAR(5000)    NOT NULL    COMMENT '글 내용',
+    `status`         INT              NOT NULL    COMMENT '거래 현황 상태',
+    `price`          INT              NOT NULL    COMMENT '가격',
+    PRIMARY KEY (number)
+);
+
+ALTER TABLE board COMMENT '중고물품';
+
+ALTER TABLE board
+    ADD CONSTRAINT FK_board_member_number_member_number FOREIGN KEY (member_number)
+        REFERENCES member (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- member Table Create SQL
+CREATE TABLE locker_location
+(
+    `loc_number`    INT             NOT NULL    AUTO_INCREMENT COMMENT '지점번호',
+    `name`          VARCHAR(50)     NOT NULL    COMMENT '지점명',
+    `locker_count`  INT             NOT NULL    COMMENT '보관함 개수',
+    `latitude`      DOUBLE          NULL        COMMENT '위도',
+    `longitude`     DOUBLE          NULL        COMMENT '경도',
+    `image`         VARCHAR(360)    NULL        COMMENT '이미지 파일절대경로 + 파일명',
+    PRIMARY KEY (loc_number)
+);
+
+ALTER TABLE locker_location COMMENT '지점 보관함';
+
+
+-- member Table Create SQL
+CREATE TABLE locker
+(
+    `number`        INT            NOT NULL    AUTO_INCREMENT COMMENT '보관함 번호',
+    `loc_number`    INT            NOT NULL    COMMENT '지점번호',
+    `size`          INT            NOT NULL    COMMENT '보관함 사이즈',
+    `is_use`        INT            NOT NULL    COMMENT '사용여부',
+    `board_number`  INT            NULL        COMMENT '보관 물품 번호',
+    `password`      VARCHAR(50)    NOT NULL    DEFAULT '0000' COMMENT '비밀번호',
+    `input_date`    TIMESTAMP      NULL        COMMENT '물건입고시간',
+    PRIMARY KEY (number)
+);
+
+ALTER TABLE locker COMMENT '보관함';
+
+ALTER TABLE locker
+    ADD CONSTRAINT FK_locker_loc_number_locker_location_loc_number FOREIGN KEY (loc_number)
+        REFERENCES locker_location (loc_number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE locker
+    ADD CONSTRAINT FK_locker_board_number_board_number FOREIGN KEY (board_number)
+        REFERENCES board (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- member Table Create SQL
+CREATE TABLE item_image
+(
+    `number`              INT             NOT NULL    AUTO_INCREMENT COMMENT '이미지 번호',
+    `board_number`        INT             NOT NULL    COMMENT '게시글 번호',
+    `image_dir`           VARCHAR(300)    NOT NULL    COMMENT '경로',
+    `file_name`           VARCHAR(50)     NOT NULL    COMMENT '파일명',
+    `format`              VARCHAR(10)     NOT NULL    COMMENT '확장자',
+    `size`                INT             NULL        COMMENT '용량',
+    `order_number`        INT             NOT NULL    COMMENT '순서',
+    `original_file_name`  VARCHAR(45)     NULL        COMMENT '원래파일이름',
+    PRIMARY KEY (number)
+);
+
+ALTER TABLE item_image
+    ADD CONSTRAINT FK_item_image_board_number_board_number FOREIGN KEY (board_number)
+        REFERENCES board (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- member Table Create SQL
+CREATE TABLE deal
+(
+    `number`          INT          NOT NULL    AUTO_INCREMENT COMMENT '거래번호',
+    `board_number`    INT          NOT NULL    COMMENT '게시글 번호',
+    `seller_number`   INT          NOT NULL    COMMENT '판매자 회원번호',
+    `buyer_number`    INT          NOT NULL    COMMENT '구매자 회원번호',
+    `bird_number`     INT          NULL        COMMENT 'BIRD 회원번호',
+    `locker_number`   INT          NOT NULL    COMMENT '보관함 번호',
+    `create_date`     TIMESTAMP    NULL        COMMENT '거래 등록 시점',
+    `receiving_date`  TIMESTAMP    NULL        COMMENT '입고 완료시점',
+    `shipping_date`   TIMESTAMP    NULL        COMMENT '출고 완료시점',
+    `delivery_date`   TIMESTAMP    NULL        COMMENT '배달 완료 시점',
+    `is_pickup`       INT          NOT NULL    COMMENT '픽업 여부',
+    `temp_status`     INT          NULL        COMMENT '거래 현황 상태',
+    PRIMARY KEY (number)
+);
+
+ALTER TABLE deal COMMENT '거래';
+
+ALTER TABLE deal
+    ADD CONSTRAINT FK_deal_locker_number_locker_number FOREIGN KEY (locker_number)
+        REFERENCES locker (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE deal
+    ADD CONSTRAINT FK_deal_board_number_board_number FOREIGN KEY (board_number)
+        REFERENCES board (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE deal
+    ADD CONSTRAINT FK_deal_seller_number_member_number FOREIGN KEY (seller_number)
+        REFERENCES member (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE deal
+    ADD CONSTRAINT FK_deal_buyer_number_member_number FOREIGN KEY (buyer_number)
+        REFERENCES member (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE deal
+    ADD CONSTRAINT FK_deal_bird_number_member_number FOREIGN KEY (bird_number)
+        REFERENCES member (number) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- 지점 보관함 1개 생성
+insert into locker_location(image, latitude, longitude , locker_count, name)
+values (null, 1.0, 1.0, 10, '관악1호점');
+
+
+-- 관악 1호점 보관함 10개 생성
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+insert into locker(input_date, is_use, `size`, password, loc_number, board_number)
+values (null, 0, 10, '0000', 1, null);
+
+
+

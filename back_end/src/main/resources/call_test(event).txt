@@ -1,0 +1,7 @@
+-- Event 생성
+CREATE EVENT call_test
+    ON SCHEDULE
+        EVERY 3 MINUTE -- Event 실행 주기
+        STARTS' 2021-02-03 16:50:00.000' -- Event 최초 시작 시간
+    DO
+        CALL check_update();-- Event에서 수행할 명령어

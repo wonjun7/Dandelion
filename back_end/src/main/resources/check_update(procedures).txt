@@ -1,0 +1,30 @@
+DELIMITER $$
+CREATE PROCEDURE check_update()
+BEGIN
+	update deal d1
+	set temp_status = 5
+	where board_number in
+	(
+	SELECT board_number
+	FROM locker
+	where is_use = 1
+	and board_number is not null
+	and input_date is not nulL
+	AND TIMESTAMPDIFF(HOUR , input_date , NOW()) >= 12
+	);
+
+
+	-- board 테이블에 12시간 바뀐정보 update
+	update board b1
+	set status = 5
+	where `number` in
+	(
+	SELECT board_number
+	FROM locker
+	where is_use = 1
+	and board_number is not null
+	and input_date is not nulL
+	AND TIMESTAMPDIFF(HOUR , input_date , NOW()) >= 12
+	) AND b1.status = 3;
+END
+DELIMITER ;
