@@ -7,3 +7,32 @@ SET @@global.event_scheduler = 1;
 
 -- MariaDB event scheduler 활성화 여부 확인
 show variables like 'event%';
+
+-- 위쪽만 실행하면 됨.
+----------------------------------------------------------------------------
+
+/*
+-- 1. Option 변경 -- mariadb restart시 꺼지는 설정
+
+-- MariaDB event scheduler 활성화
+SET GLOBAL event_scheduler = ON;
+SET @@global.event_scheduler = ON;
+SET GLOBAL event_scheduler = 1;
+SET @@global.event_scheduler = 1;
+
+
+-- 2. my.ini  (Linux에서는 my.cnf ) 에 설정 추가 -- mariadb restart시에부터 실행되고 그때부턴 항상 껏다켜도 작동
+  event_scheduler = ON
+
+-- 3. 1번의 옵션으로 이벤트를 사용할지 여부를 확인하는 sql문
+ show variables like 'event%';
+
+-- 4. 등록한 이벤트 목록의 정보를 확인하는 sql문
+show events;
+
+-- 5. 작동상태의 이벤트들의 정보들 확인
+SELECT * FROM information_schema.`EVENTS`;
+
+-- 6. 작동 프로세스들 목록 확인
+show processlist;
+*/
